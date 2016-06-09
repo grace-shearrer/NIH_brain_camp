@@ -1,6 +1,6 @@
 {load_file("stdgui.hoc")}
 {load_file("cell_template.hoc")}
-
+//this is loading the cell_template.hoc which defines the cell, that template uses the mod files you made also :)
 objref axon
 
 SubVBoxNum = 3

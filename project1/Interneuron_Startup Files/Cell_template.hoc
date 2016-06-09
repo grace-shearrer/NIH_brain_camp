@@ -1,0 +1,80 @@
+// Created by FF (2016)
+// 3-comp LA pyramidal cells template (with osci)
+
+/////====================/////
+///// Type A cell in LA /////
+/////===================/////
+
+begintemplate Cell
+	public soma,connect2target,type
+	create soma
+
+	public ncl, synlist
+	objref ncl, synlist
+	strdef type
+        
+	Leak channel (passive channel):
+        insert pas
+	g_pas
+	g_pas=0.00025 (Siemens/cm2)
+
+	Na channel:
+	inset kdr
+	gkdr_kdr= //insert value
+
+	kD channel:
+	insert kD
+	gkD_kD= //insert value
+
+	e_pas= -70 //(mV)
+	ena= xx //(mV)
+	ek= xx //(mV)
+	eh=xx // (mV)
+		
+	proc init() {	
+	
+		ncl = new List()
+		synlist =new List()		
+		type = "Cell"	
+
+
+		
+		
+		
+		  ////////////////////////////////////////
+		 //         Conductance values         //
+		////////////////////////////////////////
+		
+
+		celsius = 31.0 
+		
+
+		
+		/////// geometry ////////
+		soma {L = 3.1831 diam = 10 cm = 1 nseg = 1}		
+	    
+		
+		access soma
+		//distance()
+		
+		
+		soma {	
+				insert nas gna_nas = xxx  ena = 50
+				insert pas g_pas= 0.00025 e_pas= -70  
+				insert kdr gkdr_kdr = xxx    ek=-90
+				insert kD gkD_kD = xxx   ek=-90
+		}		
+	}
+obfunc connect2target() { localobj nc
+	soma nc = new NetCon(&v(0.5), $o1)
+	nc.threshold = 0
+	if (numarg() == 2) ($o2 = nc)
+	return nc
+	}		
+endtemplate Cell
+
+///////////////////////////////////////////////////////////
+
+
+
+
