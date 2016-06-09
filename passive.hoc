@@ -1,13 +1,31 @@
 // passive.hoc   MODELING A SINGLE CELL WITH PASSIVE MEMBRANE 
-// AND CURRENT INJECTION 
+// AND CURRENT INJECTION
+ 
+/////////////////////////////////////////////////////
+load_file("nrngui.hoc") //STEP 1. LOAD TEMPLATES//////
+/////////////////////////////////////////////////////
 
-load_file("nrngui.hoc") 
 //soma is just the same if the membrane, it can be anything this is just an object 
-create soma
-access soma
+//create is a neuron command to create cylinder with membrane like properties
+
+create soma ////soma is the name you give the cell
+
+///////////////NEURON DEFINED////////////////////
+///v_init= inital voltage
+///diameter
+///capacitance of the membrane
+///lower case implies per unit area
+///nseg how many segments you want
+///Ra axial resistance
+///to access something use "soma.THING YOU WANT TO ACCESS
+
+
+////////////////////////////////////////////////
+access soma////////////////////////////////////
 soma nseg = 1		
-soma diam = 200				//um	
-soma L = 100				//um
+soma diam = 200				//um diameter//	
+soma L = 100				//um length//
+//////////////////////////////////////////////
 
 //NEURON defaults….the number of segments in the section [1], 
 //the diameter [500 um], the length [100 um], the capacitance [1 uF/cm^2]
@@ -16,9 +34,21 @@ soma L = 100				//um
 
 //Note that NEURON assumes cm, and gl_hh as being in units of /cm2
 soma cm = 1.4884e-4/6.2832e-4 	// uF/cm2
+
  
-// inserts the passive (leak) channel and assign value.
-soma insert hh
+// inserts the passive (leak) channel and assign value
+// insert will call the mod file of that name
+// name of the mod file is needed, but the .mod is not needed
+
+soma insert hhi
+
+/////////////////////////////////////
+// PROPERTIES OF CHANNELS //////////
+// conductance per unit area (g_leak) 
+// equilibrium potential (el)///////
+// gate proportion (m or h)
+// time constant
+
 gnabar_hh = 0	
 gkbar_hh = 0 //neuron really likes putting g in front of things
 gl_hh = 2.0e-5	//S/cm2 this is a leak channel

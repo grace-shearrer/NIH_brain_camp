@@ -1,0 +1,5 @@
+library(ggplot2)
+data<-read.table("~/Documents/NIH_BRAIN/ampsVspikes.csv", header=T, sep=",")
+ggplot(data, aes(amps, spikes))+geom_point()+geom_line()
+data2<-read.table("~/Documents/NIH_BRAIN/timeVamp.csv", header=T, sep=",")
+ggplot(data2, aes(time, amp))+geom_point()+geom_line()
