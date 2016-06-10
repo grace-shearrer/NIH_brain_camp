@@ -1,0 +1,157 @@
+load_file("nrngui.hoc")
+
+load_file("Cell_template.hoc")
+
+v_init = -70.038
+objref cell
+cell = new Cell(1)
+access cell.soma
+objref stim[2], nc[2]
+
+
+dt = 0.01	// (ms)
+steps_per_ms = 50
+tstop = 1000//80500	// (ms)
+
+///// current clamp ////
+delay_Int = 48		//(ms)
+duration_Int = 1e+09//(ms)
+amplitude_Int = 3.35	//(pA)
+
+objref  ccl, cclA
+
+cell.soma cclA = new IClamp(0.5)
+cclA.del = delay_Int		// (ms)
+cclA.dur = duration_Int		// (ms)
+cclA.amp = amplitude_Int*1e-3	// (nA)
+
+
+/////////////////////////////////////////////////////////////
+/////////////////////   Synapse model   ////////////////////
+/////////////////////////////////////////////////////////////
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+SubVBoxNum = 4
+objref MainHBoxObj,SubVBoxObj[SubVBoxNum]
+
+proc MainBox() { local i
+		MainHBoxObj = new HBox()
+		for i=0,SubVBoxNum-1 SubVBoxObj[i] = new VBox()
+		SubVBoxObj[0].intercept(1)
+			newPlotVoltage1()
+			//newPlotVoltage2()
+			//newPlotVoltage3()
+		SubVBoxObj[0].intercept(0)
+		SubVBoxObj[1].intercept(1)			
+			//newPlotCurrent() 
+			//newPlotCurrent2()
+		SubVBoxObj[1].intercept(0)
+		SubVBoxObj[2].intercept(1)
+			access cell.soma
+			nrnsecmenu(.5,1)
+			//nrnpointmenu(0.5,1)
+			//nrnpointmenu(cclB)
+			
+			//access cell.dend
+			//nrnsecmenu(.5,1)	
+			//access cell.p_dend
+			//nrnsecmenu(.5,1)			
+		SubVBoxObj[2].intercept(0)
+		SubVBoxObj[3].intercept(1)
+			nrncontrolmenu()
+			xpanel(" ")
+				xbutton("QUIT","quit()")
+			xpanel(0)
+			nrnpointmenu(cclA)
+			
+		SubVBoxObj[3].intercept(0)
+		MainHBoxObj.intercept(1)
+			for i=0,SubVBoxNum-1 SubVBoxObj[i].map()
+		MainHBoxObj.intercept(0)
+		MainHBoxObj.map("Re-Tune",10,25,800,600)
+}
+
+strdef tstr,tstr1
+
+proc newPlotVoltage1() {
+	newPlot(0,tstop,-100,50)
+	graphItem.save_name("graphList[0].")
+	graphList[0].append(graphItem)
+	graphItem.addexpr("cell.soma.v(.5)")
+	graphItem.label(.08,.925,"mV")
+}
+/*proc newPlotVoltage2() {
+	newPlot(0,tstop,-100,50)
+	graphItem.save_name("graphList[0].")
+	graphList[0].append(graphItem)
+	graphItem.addexpr("cell_3.dend.v(.5)")
+	graphItem.label(.08,.925,"mV")
+}
+proc newPlotVoltage3() {
+	newPlot(0,tstop,-100,50)
+	graphItem.save_name("graphList[0].")
+	graphList[0].append(graphItem)
+	graphItem.addexpr("cell_3.p_dend.v(.5)")
+	graphItem.label(.08,.925,"mV")
+}
+proc newPlotCurrent() {
+	newPlot(0,tstop,-0.2,0.2)
+	graphItem.save_name("graphList[2].")
+	graphList[1].append(graphItem)
+	graphItem.addexpr("(cell_3.dend.v(0.5)- cell_3.soma.v(0.5))/(R_S + R_api)",1,2)  // (0.016129))/(0.0382 + 12.16)",1,2)
+	//graphItem.addexpr("cell_3.soma.ik",2,2)
+	//tstr1 = units(&cell_3.soma.ina)
+	//graphItem.label(.08,.925,tstr1)
+}
+
+proc newPlotCurrent2() {
+	newPlot(0,tstop,-0.3,0.15)
+	graphItem.save_name("graphList[2].")
+	graphList[1].append(graphItem)
+	graphItem.addexpr("(cell_3.p_dend.v(0.5) - cell_3.soma.v(0.5))/(R_S_2 + R_b)",1,2)
+	//graphItem.addexpr("cell_3.dend.ik",2,2)
+	//tstr1 = units(&cell_3.dend.ina)
+	//graphItem.label(.08,.925,tstr1)
+}
+*/
+
+MainBox()
+objref cells_list
+cells_list=new List()
+cells_list.append(cell)
+objref tvec, idvec 										// will be Vectors that record all spike times (tvec)
+														// and the corresponding id numbers of the cells that spiked (idvec)
+proc spikerecord() {local i localobj nc, nil
+	tvec = new Vector()
+	idvec = new Vector()
+	for i=0, cells_list.count()-1 {
+	  nc = cells_list.object(i).connect2target(nil)
+	  	 
+	  nc.record(tvec, idvec, i)
+												// the Vector will continue to record spike times even after the NetCon has been destroyed
+	}
+}
+
+spikerecord()
+
+run()
+
+objref savetspikes
+savetspikes = new File()
+savetspikes.wopen("data.dat")
+proc sspikeout() { local i
+	
+		
+			for i=0, tvec.size-1 {
+			//savetspikes.aopen("data")	
+			//printf("%7.2f\t %d\n", tvec.x[i], idvec.x[i])
+			savetspikes.printf("%8.4f\t %d\n", tvec.x[i], idvec.x[i])
+			//savet.close()
+			}
+
+}
+sspikeout()
+savetspikes.close()

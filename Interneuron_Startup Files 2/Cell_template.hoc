@@ -12,24 +12,6 @@ begintemplate Cell
 	public ncl, synlist
 	objref ncl, synlist
 	strdef type
-        ////ALL OF THIS IS ACTUALLY BELLOW/////
-	//Leak channel (passive channel):
-        //insert pas
-	//g_pas
-	//g_pas=0.00025 (Siemens/cm2)
-
-	//Na channel:
-	//inset kdr
-	//gkdr_kdr=225 //insert value
-
-	//kD channel:
-	//insert kD
-	//gkD_kD=xx //insert value
-
-	//e_pas= -70 //(mV)
-	//ena= 50 //(mV)
-	//ek= -90 //(mV)
-	//eh=  // (mV)
 		
 	proc init() {	
 	
@@ -59,10 +41,10 @@ begintemplate Cell
 		
 		
 		soma {	
-				insert nas gna_nas = 112.5  ena = 50
+				insert nas gna_nas = .1125  ena = 50
 				insert pas g_pas= 0.00025 e_pas= -70  
-				insert kdr gkdr_kdr = 225    ek=-90
-				insert kD gkD_kD = -0.1    ek=-90 //!!!!WHY DO I DEFINE THIS TWICE?!!!
+				insert kdr gkdr_kdr = .225    ek=-90
+				insert kD gkD_kD = .0001   ek=-90
 		}		
 	}
 obfunc connect2target() { localobj nc
@@ -74,3 +56,7 @@ obfunc connect2target() { localobj nc
 endtemplate Cell
 
 ///////////////////////////////////////////////////////////
+
+
+
+
