@@ -1,0 +1,65 @@
+// Cell_Template defines geometrical and biophysical properties of a type of cells.
+//	- Don't forget to include the cell_template.hoc file in your main program. 
+//		Example:
+//		{load_file("cell_template.hoc")}
+// 	- Always build different types of cells with different templates.
+// 	- For cells of the same type, just repeat building new cell objects with the same template. 
+//		Example:
+//		objref CellA
+//		CellA = new HCOcell()
+
+begintemplate HCOcell
+	public soma	// declares object soma is a public object that can be accessed by any procedures/functions
+	create soma	// declares soma as a membrane compartment object
+
+	proc init() {
+
+    		create soma	// create soma in the initialization
+
+		/////// geometrical properties //////
+		soma {
+			nseg=1	// create only one segment in the soma
+			// gives area of .628e-3 cm^2
+			L=2000		// (micrometer)
+			diam=10		// (micrometer)
+	    	}
+
+		/////// biophysical properties //////
+		soma {
+			cm = 1		// (microF/cm2)
+			
+			insert leak
+			eleak = -50 // (mV)
+			gbar_leak = .03e-3 // (siemens/cm2)
+			
+
+			insert na
+			ena=50
+			gbar_na=0.2
+
+			insert cat
+			gbar_cat=0.0552e-3
+			
+
+			insert cas
+			gcasbar_cas = 0.055e-3
+			
+			insert ka
+			ek=-80
+			gbar_ka=0.200e-3
+
+			insert kca
+			gbat_kca=0.500e-3
+
+			insert hyper
+			gbar_hyper=0.0001
+			eh=-20
+
+			cao=3
+			cai=50e-6
+			
+			insert capool
+
+		}
+	}
+endtemplate HCOcell

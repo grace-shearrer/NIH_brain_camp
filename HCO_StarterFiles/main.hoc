@@ -1,0 +1,101 @@
+{load_file("nrngui.hoc")}
+{load_file("cell_template.hoc")}
+{load_file("graphics_lib.hoc")}
+
+tstop = 5000 // (ms)
+v_init = -50 // (mV)
+
+//Create two cells with the HCOcell template (Appendix B)
+objref CellA
+
+CellA=new HCOcell()
+
+///making the clamp///
+objref ccl
+
+CellA.soma ccl = new IClamp(.5)
+ccl.del=0
+ccl.dur=100
+ccl.amp=1
+
+///making a synapse///
+objref syn[2]
+
+CellA.soma syn[0] = new inhsyn(.5)		// build a synapse into CellA
+
+objref nstim		// the code below provides cellA with a spike train
+
+nstim=new NetStim(0.9)
+nstim.interval=10	// ms (mean) time between spikes
+nstim.number=100	//(average) number of spikes
+nstim.start=0		// ms (most likely) start time of first spike
+nstim.noise=0		// range 0 to 1. Fractional randomness.
+
+objref nc[3]
+
+nc[2]=new NetCon(nstim,syn[0],0,0,1)
+
+objref CellB    // declare two neuron objects
+
+CellB = new HCOcell() 
+
+CellB.soma syn[1] = new inhsyn(.5)		// same for CellB
+
+syn[0].esyn = -80			// (mV) synaptic channels reversal potential
+syn[0].gmax = 40e-3		// (uS) synaptic channels maximum conductance
+syn[1].esyn = -80
+syn[1].gmax = 40e-3 
+
+weight1 = 10		// synaptic weights (A-->B)
+weight2 = 10		// synaptic weights (B-->A)
+
+
+CellA.soma nc[0] = new NetCon(&v(.5),syn[1],0, 0, weight1) 
+
+CellB.soma nc[1] = new NetCon(&v(.5),syn[0],0, 0, weight2)
+
+
+///////plots////////////
+
+//Plot one voltage curve in one figure
+Plot1V("CellA")
+
+//Plot two voltage curves in one figure
+Plot2V("CellA","CellB")
+
+//Plot one current curve in one figure
+Plot1I("CellA","ina_na")
+
+//Plot one calcium concentration in one figure
+Plot1CaPool("CellA")
+
+//Panel for the current clamp/synapse parameters
+
+nrnpointmenu(ccl)
+nrnpointmenu(syn[0])
+
+
+//Panel for conductances in one neuron:
+CellA.soma nrnsecmenu(.5,1)
+CellB.soma nrnsecmenu(.5,1)
+
+//Control Panel
+nrncontrolmenu()
+
+//Create two objects to contain the synapses and net connections
+
+//Add inhibitory synapses to each cell in the middle of the soma and save them to their respective locations
+
+//Define the reversal potential "esyn" and conductance "gmax" for the synapses
+
+//Make two net connections using the NetCon function
+//The NetCon function takes five arguments: NetCon(&v(x), target, threshold, delay, weight)
+//See Appendix B
+
+//Create a current clamp object and attach it to the soma of one of the cells (See Appendix B)
+
+//Use the plotting library to visualize the output (Appendix C)
+
+
+init()
+run()
